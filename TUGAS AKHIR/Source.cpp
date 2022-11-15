@@ -3,12 +3,24 @@
 #include <Windows.h>
 #include<fstream>
 #include<string>
+#include <cstring>
+#include <algorithm>
 using namespace std;
 
-int jumlah_beat = 7, jumlah_vario = 5, jumlah_supra = 7;
-string daftar[19][5];
+int jumlah_beat = 9, jumlah_vario = 5, jumlah_supra = 6;
+string daftar[20][5];
 
 int main();
+
+bool is_digits(const string& str)
+{
+	return str.find_first_not_of("0123456789") == string::npos;
+}
+
+bool any_space(const string& s)
+{
+	return std::any_of(s.begin(), s.end(), ::isspace);
+}
 
 void simpan() {
 	fstream file;
@@ -81,7 +93,15 @@ void kepala() {
 
 //Fungsi Pengisian Data
 void pilihan1() {
-	string check;
+	string check, nama, nik, durasi;
+	int panjang;
+	if (jumlah_beat == 0 && jumlah_supra == 0 && jumlah_vario == 0) {
+		system("cls");
+		kepala();
+		cout << "MAAF SEMUA UNIT MOTOR TELAH DIGUNAKAN";
+		Sleep(2000);
+		main();
+	}
 
 	for (int g = 0; g <= 19; g++) {
 		if (daftar[g][0] == "1") {
@@ -94,14 +114,50 @@ void pilihan1() {
 
 	for (int i = 0; i <= 19; i++) {
 		if (daftar[i][0] == "" || daftar[i][0] == "0" || daftar[i][0]=="N/A") {
-			cout << "Nama: ";
-			cin >> daftar[i][1];
+
+		masuknama:
+			system("cls");
+			kepala();
+			cout << "Nama (1 kata): ";
+			cin.ignore();
+			getline(cin, nama);
+			int tf = any_space(nama);
+			if (tf == 0) {
+				daftar[i][1] = nama;	
+			}
+			else {
+				cout << "Nama tidak sesuai format!!! \n(Nama hanya 1 kata)" << endl;
+				Sleep(2000);
+				goto masuknama;
+			}
+			
+		masuknik:
+			system("cls");
+			kepala();
 			cout << "NIK: ";
-			cin >> daftar[i][2];
-			//cout << "Jenis motor: ";
-			//cin >> daftar[i][3];
+			cin >> nik;
+			panjang = nik.length();
+			if (is_digits(nik) == 0) {
+				cout << "NIK tidak sesuai format!!! \n(NIK hanya berisi angka)" << endl;
+				Sleep(2000);
+				goto masuknik;
+			}
+			else {
+				daftar[i][2] = nik;
+			}
+		masukdurasi:
+			system("cls");
+			kepala();
 			cout << "Durasi pemakaian(hari): ";
-			cin >> daftar[i][4];
+			cin >> durasi;
+			if (is_digits(durasi) == 0) {
+				cout << "Waktu tidak sesuai format!!! \n(Waktu hanya berisi angka)" << endl;
+				Sleep(2000);
+				goto masukdurasi;
+			}
+			else {
+				daftar[i][4] = durasi;
+			}
 
 
 			pilihmotor:
@@ -147,7 +203,7 @@ void pilihan2() {
 }
 
 void pilihan3() {
-	string nama, no;
+	string nama, no, nik;
 	int no_urut, X, uang;
 	int bayar=1;
 	kepala();
@@ -157,9 +213,11 @@ void pilihan3() {
 	cin >> no;
 	cout << "Masukkan nama penyewa: ";
 	cin >> nama;
+	cout << "Masukkan NIK penyewa: ";
+	cin >> nik;
 	no_urut = stoi(no);
 	X = no_urut - 1;
-	if (nama != daftar[no_urut - 1][1] || daftar[X][0] == "0") {
+	if (nama != daftar[no_urut - 1][1] || daftar[X][0] == "0" || nik != daftar[X][2]) {
 		cout << "VERIFIKASI GAGAL | DATA TIDAK SESUAI" << endl;
 		cout << "Mohon masukkan data sesuai dengan list!!!";
 		Sleep(5000);
@@ -204,7 +262,7 @@ void pilihan3() {
 		}
 		system("pause");
 
-		for (int i = 0; i <= 5; i++) {
+		for (int i = 0; i <= 4; i++) {
 			daftar[X][i] = "N/A";
 		}
 		daftar[X][0] = "0";
@@ -220,6 +278,7 @@ void pilihan3() {
 //FUNGSI UTAMA
 int main() {
 	system("color b");
+	system("cls");
 	char pilihan;
 utama:
 	ambil();
